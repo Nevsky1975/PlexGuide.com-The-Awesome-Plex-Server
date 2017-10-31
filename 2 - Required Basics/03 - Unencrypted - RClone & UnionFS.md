@@ -145,7 +145,7 @@ Type=simple
 User=root
 Group=root
 ### Note, you can change /mnt/plexdrive4 to /mnt/rclone; but can run into API bans with large libraries 
-ExecStart=/usr/bin/unionfs -o cow,allow_other,nonempty /mnt/rclone=RW:/mnt/plexdrive4=RO /mnt/rclone-union
+ExecStart=/usr/bin/unionfs -o cow,allow_other,nonempty /mnt/rclone=RW: /mnt/rclone-union
 TimeoutStopSec=20
 KillMode=process
 RemainAfterExit=yes
