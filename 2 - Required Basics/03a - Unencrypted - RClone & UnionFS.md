@@ -121,7 +121,7 @@ sudo systemctl status rclone.service
 ```
 
 - Press CTRL + C to exit the status message
-
+ 
 ## Establishing unionfs.service
 
 ![N](http://icons.iconarchive.com/icons/hopstarter/hard-drive/72/Device-Hard-Drive-Mac-icon.png)
