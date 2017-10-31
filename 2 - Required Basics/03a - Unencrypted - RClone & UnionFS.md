@@ -145,7 +145,7 @@ Type=simple
 User=root
 Group=root
 ### Note, you can change /mnt/plexdrive4 to /mnt/rclone; but can run into API bans with large libraries 
-ExecStart=/usr/bin/unionfs -o cow,allow_other,nonempty /mnt/rclone-move=RW:/mnt/plexdrive4=RO /mnt/rclone-union
+ExecStart=/usr/bin/unionfs -o cow,allow_other,nonempty /mnt/rclone=RW:/mnt/plexdrive4=RO /mnt/rclone-union
 TimeoutStopSec=20
 KillMode=process
 RemainAfterExit=yes
@@ -163,79 +163,3 @@ sudo systemctl enable unionfs.service
 sudo systemctl start unionfs.service
 sudo systemctl status unionfs.service
 ```
-
-## Establishing the move.service
-
-- This results in your files being upload from your local drive to google drive
-- Do not increase the bwlimit past 10M. 8M is a safe number to prevent a Google Upload Drive API Ban.
-
-### Create a Script
-
-```sh
-sudo nano /opt/rclone-move.sh
-```
-
-- Copy and paste the following into the script
-
-```sh
-#!/bin/bash
-
-while true
-do
-# Purpose of sleep starting is so rclone has time to startup and kick in
-sleep 30
-# Anything above 8M will result in a google ban if uploading above 8M for 24 hours
-rclone move --bwlimit 8M --tpslimit 4 --max-size 99G --log-level INFO --stats 15s local:/mnt/rclone-move gdrive:/
-done
-```
-
-- Press CTRL+X and ENTER 
-
-### Script permissions
-
-- Allows the script to execute when called upon by the move.serivce
-
-```sh
-sudo chmod 755 /opt/rclone-move.sh
-```
-
-## Create move.service
-- Helps move your files from your local drive to your Google Drive
-
-```sh
-sudo nano /etc/systemd/system/move.service
-```
-- Copy and paste the following into the move.service
-
-```sh
-
-[Unit]
-Description=Move Service Daemon
-After=multi-user.target
-
-[Service]
-Type=simple
-User=root
-Group=root
-ExecStart=/bin/bash /opt/rclone-move.sh
-TimeoutStopSec=20
-KillMode=process
-RemainAfterExit=yes
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-- Press CTRL+X and then Yes to save
-
-### Start and enable the move.service
-
-```sh
-sudo systemctl daemon-reload
-sudo systemctl enable move.service
-sudo systemctl start move.service
-sudo systemctl status move.service
-```
-
-- Press CTRL + C to exit the status message
